@@ -33,7 +33,6 @@ import edu.stevens.cs549.dhts.main.Time;
 
 public class NodeService {
 	
-	// TODO: add the missing operations
 
 	HttpHeaders headers;
 

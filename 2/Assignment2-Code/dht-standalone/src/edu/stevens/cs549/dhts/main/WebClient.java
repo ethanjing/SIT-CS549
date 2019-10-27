@@ -28,7 +28,6 @@ public class WebClient {
 	/*
 	 * Encapsulate Web client operations here.
 	 * 
-	 * TODO: Fill in missing operations.
 	 */
 
 	/*
@@ -59,7 +58,6 @@ public class WebClient {
 	}
 
 	private Response putRequest(URI uri, Entity<?> entity) {
-		// TODO
 		try {
 			Response cr = client.target(uri)
 					.request(MediaType.APPLICATION_XML_TYPE)
@@ -142,7 +140,7 @@ public class WebClient {
 	}
 	
 	public NodeInfo getClosestPrecedingFinger(NodeInfo node, int id) throws DHTBase.Failed {
-		URI getPath = UriBuilder.fromUri(node.addr).path("Finger").queryParam("id", id).build();
+		URI getPath = UriBuilder.fromUri(node.addr).path("finger").queryParam("id", id).build();
 		info("client getClosestPrecedingFinger(" + getPath + ")");
 		Response response = getRequest(getPath);
 		if (response == null || response.getStatus() >= 300) {
@@ -164,7 +162,7 @@ public class WebClient {
 	}
 	
 	public String[] get(NodeInfo n, String k) throws DHTBase.Failed {
-		URI getPath = UriBuilder.fromUri(n.addr).queryParam("key", k).build();
+		URI getPath = UriBuilder.fromUri(n.addr).path("get").queryParam("key", k).build();
 		info("client getBinding(" + getPath + ")");
 		Response response = getRequest(getPath);
 		if (response == null || response.getStatus() >= 300) {
@@ -175,7 +173,7 @@ public class WebClient {
 	}
 	
 	public void add(NodeInfo n, String k, String v) throws DHTBase.Failed {
-		URI addPath = UriBuilder.fromUri(n.addr).queryParam("key", k).queryParam("val", v).build();
+		URI addPath = UriBuilder.fromUri(n.addr).path("add").queryParam("key", k).queryParam("val", v).build();
 		TableRep tablerep = new TableRep(null, null, 1);
 		tablerep.entry[0] = new TableRow(k, new String[]{v});
 		info("client addBinding(" + addPath + ")");
@@ -187,7 +185,7 @@ public class WebClient {
 	}
 	
 	public void delete(NodeInfo n, String k, String v) throws DHTBase.Failed {
-		URI deletePath = UriBuilder.fromUri(n.addr).queryParam("key", k).queryParam("val", v).build();
+		URI deletePath = UriBuilder.fromUri(n.addr).path("delete").queryParam("key", k).queryParam("val", v).build();
 		info("client deleteBinding(" + deletePath + ")");
 		Response response = deleteRequest(deletePath);
 		if (response == null || response.getStatus() >= 300) {

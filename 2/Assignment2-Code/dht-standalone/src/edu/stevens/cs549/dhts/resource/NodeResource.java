@@ -22,7 +22,6 @@ public class NodeResource {
 	/*
 	 * Web service API.
 	 * 
-	 * TODO: Fill in the missing operations.
 	 */
 
 	Logger log = Logger.getLogger(NodeResource.class.getCanonicalName());
@@ -62,12 +61,14 @@ public class NodeResource {
 	}
 	
 	@GET
+	@Path("get")
 	@Produces("application/xml")
 	public Response getBinding(@QueryParam("key") String key) throws Invalid {
 		return new NodeService(headers, uriInfo).getBinding(key);
 	}
 	
 	@PUT
+	@Path("add")
 	@Consumes("application/xml")
 	@Produces("application/xml")
 	public Response addBinding(@QueryParam("key") String key, @QueryParam("val") String val) throws Invalid {
@@ -75,6 +76,7 @@ public class NodeResource {
 	}
 	
 	@DELETE
+	@Path("delete")
 	@Produces("application/xml")
 	public Response deleteBinding(@QueryParam("key") String key, @QueryParam("val") String val) throws Invalid {
 		return new NodeService(headers, uriInfo).deleteBinding(key, val);
