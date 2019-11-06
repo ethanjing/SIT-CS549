@@ -67,7 +67,6 @@ public class WebClient {
 	}
 
 	private Response putRequest(URI uri, Entity<?> entity) {
-		// TODO Complete.
 		try {
 			Response cr = client.target(uri)
 					.request(MediaType.APPLICATION_XML_TYPE)

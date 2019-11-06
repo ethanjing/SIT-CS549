@@ -117,7 +117,7 @@ public class DHT extends DHTBase implements IDHTResource, IDHTNode, IDHTBackgrou
 		if (localInfo.addr.equals(info.addr)) {
 			return getSucc();
 		} else {
-			// TODO: Do the Web service call
+			// Do the Web service call
 			return client.getSucc(info);
 		}
 	}
@@ -151,7 +151,7 @@ public class DHT extends DHTBase implements IDHTResource, IDHTNode, IDHTBackgrou
 			return getPred();
 		} else {
 			/*
-			 * TODO: Do the Web service call
+			 * Do the Web service call
 			 */
 			return client.getPred(info);
 		}
@@ -184,7 +184,7 @@ public class DHT extends DHTBase implements IDHTResource, IDHTNode, IDHTBackgrou
 		} else {
 			if (IRouting.USE_FINGER_TABLE) {
 				/*
-				 * TODO: Do the Web service call to the remote node.
+				 * Do the Web service call to the remote node.
 				 */
 				return client.getClosestPrecedingFinger(info, id);
 			} else {
@@ -471,7 +471,7 @@ public class DHT extends DHTBase implements IDHTResource, IDHTNode, IDHTBackgrou
 			/*
 			 * Retrieve the bindings at the specified node.
 			 * 
-			 * TODO: Do the Web service call.
+			 * Do the Web service call.
 			 */
 			return client.get(n, k);	
 		}
@@ -498,7 +498,7 @@ public class DHT extends DHTBase implements IDHTResource, IDHTNode, IDHTBackgrou
 			}
 		} else {
 			/*
-			 * TODO: Do the Web service call.
+			 * Do the Web service call.
 			 */
 			client.add(n, k, v);
 		}
@@ -551,7 +551,7 @@ public class DHT extends DHTBase implements IDHTResource, IDHTNode, IDHTBackgrou
 			}
 		} else {
 			/*
-			 * TODO: Do the Web service call.
+			 * Do the Web service call.
 			 */
 			client.delete(n, k, v);
 		}
@@ -623,7 +623,7 @@ public class DHT extends DHTBase implements IDHTResource, IDHTNode, IDHTBackgrou
 		NodeInfo info = getNodeInfo();
 		NodeInfo succ;
 		/*
-		 * TODO: Do a web service call to the node identified by "uri" and find
+		 * Do a web service call to the node identified by "uri" and find
 		 * the successor of info.id, then setSucc(succ). Make sure to clear any
 		 * local bindings first of all, to maintain consistency of the ring. We
 		 * start afresh with the bindings that are transferred from the new

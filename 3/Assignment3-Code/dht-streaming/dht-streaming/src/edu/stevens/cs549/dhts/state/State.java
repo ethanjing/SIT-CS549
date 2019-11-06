@@ -3,6 +3,7 @@ package edu.stevens.cs549.dhts.state;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import edu.stevens.cs549.dhts.activity.DHTBase;
 import edu.stevens.cs549.dhts.activity.IDHTNode;
 import edu.stevens.cs549.dhts.activity.NodeInfo;
 import edu.stevens.cs549.dhts.resource.TableRep;
+import edu.stevens.cs549.dhts.resource.TableRow;
 
 /**
  * 
@@ -109,7 +111,7 @@ public class State implements IState, IRouting {
 		return Persist.extractBindings(predId, info, successor, dict);
 	}
 
-	public synchronized TableRep extractBindings() {
+	public synchronized TableRep extractBindings() {	
 		return Persist.extractBindings(info, successor, dict);
 	}
 
@@ -318,7 +320,6 @@ public class State implements IState, IRouting {
 		if(listeners.containsKey(key)) {
 			OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
 			OutboundEvent event = eventBuilder.name(IDHTNode.NEW_BINDING_EVENT).data(String.class, value).build();
-				
 			listeners.get(key).broadcast(event);
 		}
 	}

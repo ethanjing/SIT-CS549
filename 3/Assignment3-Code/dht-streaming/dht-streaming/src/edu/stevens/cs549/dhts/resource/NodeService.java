@@ -166,8 +166,8 @@ public class NodeService {
 		return response();
 	}
 
-	public Response listen(int id, String key) {
+	public EventOutput listen(int id, String key) {
 		EventOutput eventOutput = dht.listenForBindings(id, key);
-        return response(eventOutput);
+        return eventOutput;
 	}
 }

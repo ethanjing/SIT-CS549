@@ -120,7 +120,7 @@ public class NodeResource {
 	@GET
 	@Path("listen")
 	@Produces(SseFeature.SERVER_SENT_EVENTS)
-	public Response listenOn(@QueryParam("id") int id, @QueryParam("key") String key) {
+	public EventOutput listenOn(@QueryParam("id") int id, @QueryParam("key") String key) {
 		return new NodeService(headers, uriInfo).listen(id, key);
 	}
 	
