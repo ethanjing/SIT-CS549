@@ -78,20 +78,20 @@ public class ProxyContext extends ContextBase {
 
 	@Override
 	public void msg(String m) throws IOException {
-		// TODO display the message on the remote client console
-
+		// display the message on the remote client console
+		sender.sendText(m);
 	}
 
 	@Override
 	public void msgln(String m) throws IOException {
-		// TODO display the message on the remote client console
-
+		// display the message on the remote client console
+		sender.sendText(m + '\n');
 	}
 
 	@Override
 	public void err(Throwable t) throws IOException {
-		// TODO print the stack trace on the remote client console
-
+		// print the stack trace on the remote client console
+		sender.sendText(t.getMessage() + '\n');
 	}
 
 	@Override

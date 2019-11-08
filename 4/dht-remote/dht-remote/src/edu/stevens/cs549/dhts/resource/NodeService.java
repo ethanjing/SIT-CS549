@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 
 import edu.stevens.cs549.dhts.activity.DHT;
 import edu.stevens.cs549.dhts.activity.DHTBase.Failed;
+import edu.stevens.cs549.dhts.activity.DHTBase.Invalid;
 import edu.stevens.cs549.dhts.activity.IDHTResource;
 import edu.stevens.cs549.dhts.activity.NodeInfo;
 import edu.stevens.cs549.dhts.main.Log;
@@ -95,6 +96,38 @@ public class NodeService {
 		return response(dht.getPred());
 	}
 
+	public Response getSucc() {
+		advanceTime();
+		info("getSucc()");
+		return response(dht.getSucc());
+	}
+	
+	public Response getBinding(String key) throws Invalid {
+		advanceTime();
+		info("get()");
+		return response(new TableRow(key, dht.get(key)));
+	}
+	
+	public Response addBinding(String key, String val) throws Invalid {
+		advanceTime();
+		info("add()");
+		dht.add(key, val);
+		return response();
+	}
+	
+	public Response deleteBinding(String key, String val) throws Invalid {
+		advanceTime();
+		info("delete()");
+		dht.delete(key, val);
+		return response();
+	}
+	
+	public Response closestPrecedingFinger(int id) {
+		advanceTime();
+		info("closestPrecedingFinger()");
+		return response(dht.closestPrecedingFinger(id));
+	}
+	
 	public Response notify(TableRep predDb) {
 		advanceTime();
 		info("notify()");

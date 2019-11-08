@@ -5,7 +5,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import javax.websocket.CloseReason;
+import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.Session;
+
+import edu.stevens.cs549.dhts.main.LocalShell;
 
 /**
  * Maintain a stack of shells.
@@ -60,7 +64,14 @@ public class SessionManager {
 			 *  remote control request by sending an ACK to the client.  The CLI of the newly installed shell
 			 *  will be executed by the underlying CLI as part of the "accept" command.
 			 */
-
+			ProxyContext proxyContext = ProxyContext.createProxyContext(currentServer.getSession().getBasicRemote());
+			LocalShell localshell = LocalShell.createRemotelyControlled(ShellManager.
+					getShellManager().
+					getCurrentShell().
+					getLocal(), proxyContext);
+			ShellManager.getShellManager().addShell(localshell);
+			currentServer.endInitialization();
+			proxyContext.msg(SessionManager.ACK);
 		} finally {
 			lock.unlock();
 		}
@@ -70,7 +81,11 @@ public class SessionManager {
 		lock.lock();
 		try {
 			// TODO reject remote control request by closing the session (provide a reason!)
-
+			CloseReason reason = new CloseReason(CloseCodes.CANNOT_ACCEPT, "request rejected");
+			currentServer.getSession().close(reason);
+			currentServer = null;
+		} catch (IOException e) {
+			e.printStackTrace();
 		} finally {
 			lock.unlock();
 		}
@@ -80,7 +95,11 @@ public class SessionManager {
 		lock.lock();
 		try {
 			// TODO normal shutdown of remote control session (provide a reason!)
-
+			CloseReason reason = new CloseReason(CloseCodes.NORMAL_CLOSURE, null);
+			currentServer.getSession().close(reason);
+			currentServer = null;
+		} catch (IOException e) {
+			e.printStackTrace();
 		} finally {
 			lock.unlock();
 		}

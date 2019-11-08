@@ -4,14 +4,22 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
 
 import edu.stevens.cs549.dhts.main.IShell;
 
 /*
  * TODO annotate this as a server endpoint, including callback operations and decoders.
  */
+@ServerEndpoint(
+		value = "/control/{client}",
+		decoders = CommandLineDecoder.class)
 public class ControllerServer {
 	
 	private static final Logger logger = Logger.getLogger(ControllerServer.class.getCanonicalName());
@@ -32,6 +40,7 @@ public class ControllerServer {
 		initializing = false;
 	}
 	
+	@OnOpen
     public void onOpen(Session session, @PathParam("client") String client) throws IOException {
     	/*
     	 * Cache the session in this controller.
@@ -50,6 +59,7 @@ public class ControllerServer {
         }
     }
 
+	@OnMessage
     public void onMessage(String[] commandLine) {
 		if (initializing) {
 			throw new IllegalStateException("Communication from client before ack of remote control request: " + commandLine[0]);
@@ -58,12 +68,12 @@ public class ControllerServer {
 			 * TODO Stop the current toplevel (local) shell.  It is sufficient to close the session,
 			 * which will trigger a callback on onClose() on both sides of the connection.
 			 */
-
+			sessionManager.closeCurrentSession();
 		} else {
     		/*
     		 * TODO add the commandLine to the input of the current shell
     		 */
-
+			shellManager.getCurrentShell().addCommandLine(commandLine);
 		}
     }
     
@@ -76,6 +86,7 @@ public class ControllerServer {
    		shellManager.removeShell();
     }
 
+    @OnError
 	public void onError(Throwable t) {
 		logger.log(Level.SEVERE, "Error on connection.", t);
 		if (!initializing) {
@@ -83,6 +94,7 @@ public class ControllerServer {
 		}
 	}
 
+    @OnClose
 	public void onClose(Session session) {
 		/*
 		 * A client may close the session without sending the QUIT command.

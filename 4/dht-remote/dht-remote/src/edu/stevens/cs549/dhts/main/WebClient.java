@@ -59,13 +59,37 @@ public class WebClient {
 	}
 
 	private Response putRequest(URI uri, Entity<?> entity) {
-		// TODO Complete.
+		try {
+			Response cr = client.target(uri)
+					.request(MediaType.APPLICATION_XML_TYPE)
+					.header(Time.TIME_STAMP, Time.advanceTime())
+					.put(entity);
+			processResponseTimestamp(cr);
+			return cr;
+		} catch (Exception e) {
+			error("Exception during PUT request: " + e);
+			return null;
+		}
 	}
 	
 	private Response putRequest(URI uri) {
 		return putRequest(uri, Entity.text(""));
 	}
 
+	private Response deleteRequest(URI uri) {
+		try {
+			Response cr = client.target(uri)
+					.request(MediaType.APPLICATION_XML_TYPE)
+					.header(Time.TIME_STAMP, Time.advanceTime())
+					.delete();
+			processResponseTimestamp(cr);
+			return cr;
+		} catch (Exception e) {
+			error("Exception during DELETE request: " + e);
+			return null;
+		}
+	}
+	
 	private void processResponseTimestamp(Response cr) {
 		Time.advanceTime(Long.parseLong(cr.getHeaders().getFirst(Time.TIME_STAMP).toString()));
 	}
@@ -75,6 +99,8 @@ public class WebClient {
 	 * information.
 	 */
 	private GenericType<JAXBElement<NodeInfo>> nodeInfoType = new GenericType<JAXBElement<NodeInfo>>() {
+	};
+	private GenericType<JAXBElement<TableRow>> tableRowType = new GenericType<JAXBElement<TableRow>>() {
 	};
 
 	/*
@@ -123,5 +149,78 @@ public class WebClient {
 		}
 	}
 
+	/*
+	 * Ping a remote site to see if it is still available.
+	 */
+	public boolean isFailed(URI base) {
+		URI uri = UriBuilder.fromUri(base).path("info").build();
+		Response c = getRequest(uri);
+		return c.getStatus() >= 300;
+	}
 	
+	public NodeInfo getSucc(NodeInfo node) throws DHTBase.Failed {
+		URI succPath = UriBuilder.fromUri(node.addr).path("succ").build();
+		info("client getSucc(" + succPath + ")");
+		Response response = getRequest(succPath);
+		if (response == null || response.getStatus() >= 300) {
+			throw new DHTBase.Failed("GET /succ");
+		} else {
+			NodeInfo succ = response.readEntity(nodeInfoType).getValue();
+			return succ; 
+		}
+	}
+	
+	public NodeInfo getClosestPrecedingFinger(NodeInfo node, int id) throws DHTBase.Failed {
+		URI getPath = UriBuilder.fromUri(node.addr).path("finger").queryParam("id", id).build();
+		info("client getClosestPrecedingFinger(" + getPath + ")");
+		Response response = getRequest(getPath);
+		if (response == null || response.getStatus() >= 300) {
+			throw new DHTBase.Failed("GET /finger?id=ID");
+		} else {
+			return response.readEntity(nodeInfoType).getValue();
+		}
+	}
+	
+	public NodeInfo findSuccessor(URI addr, int id) throws DHTBase.Failed {
+		URI findPath = UriBuilder.fromUri(addr).path("find").queryParam("id", id).build();
+		info("client findSuccessor(" + findPath + ")");
+		Response response = getRequest(findPath);
+		if (response == null || response.getStatus() >= 300) {
+			throw new DHTBase.Failed("GET /find?id=ID");
+		} else {
+			return response.readEntity(nodeInfoType).getValue();
+		}
+	}
+	
+	public String[] get(NodeInfo n, String k) throws DHTBase.Failed {
+		URI getPath = UriBuilder.fromUri(n.addr).path("get").queryParam("key", k).build();
+		info("client getBinding(" + getPath + ")");
+		Response response = getRequest(getPath);
+		if (response == null || response.getStatus() >= 300) {
+			throw new DHTBase.Failed("GET /getBinding?key=KEY");
+		} else {
+			return response.readEntity(tableRowType).getValue().vals;
+		}
+	}
+	
+	public void add(NodeInfo n, String k, String v) throws DHTBase.Failed {
+		URI addPath = UriBuilder.fromUri(n.addr).path("add").queryParam("key", k).queryParam("val", v).build();
+		TableRep tablerep = new TableRep(null, null, 1);
+		tablerep.entry[0] = new TableRow(k, new String[]{v});
+		info("client addBinding(" + addPath + ")");
+		Response response = putRequest(addPath, Entity.xml(tablerep));
+		if (response == null || response.getStatus() >= 300) {
+			throw new DHTBase.Failed("PUT /addBinding?key=KEY&val=VAL");
+		}
+	}
+	
+	public void delete(NodeInfo n, String k, String v) throws DHTBase.Failed {
+		URI deletePath = UriBuilder.fromUri(n.addr).path("delete").queryParam("key", k).queryParam("val", v).build();
+		info("client deleteBinding(" + deletePath + ")");
+		Response response = deleteRequest(deletePath);
+		if (response == null || response.getStatus() >= 300) {
+			throw new DHTBase.Failed("DELETE /deleteBinding?key=KEY&val=VAL");
+		}
+		
+	}
 }

@@ -129,7 +129,8 @@ public abstract class ShellBase implements IShell {
 		if (inputs.length != 1) {
 			msgln("Usage: accept");
 		} else {
-			// TODO
+			sessionManager.acceptSession();
+			shellManager.getCurrentShell().cli();
 		}
 	}
 
@@ -140,7 +141,7 @@ public abstract class ShellBase implements IShell {
 		if (inputs.length != 1) {
 			msgln("Usage: reject");
 		} else {
-			// TODO
+			sessionManager.rejectSession();
 		}
 	}
 
